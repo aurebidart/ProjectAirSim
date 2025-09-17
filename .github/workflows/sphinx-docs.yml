@@ -40,6 +40,8 @@ jobs:
 
       - name: Extra runtime deps for client docs
         run: pip install cryptography
+      - name: Extra runtime deps for client docs
+        run: pip install cryptography msgpack
 
       # (opcional) instala paquetes de sistema si tu doc los necesita
       # - name: System deps
