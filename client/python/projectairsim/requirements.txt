@@ -2,6 +2,8 @@
 wheel
 pytest
 pytest-cov
+sphinx>=7
+sphinx-rtd-theme>=2
 
 # Install projectairsim package in editable development mode
 -e .
