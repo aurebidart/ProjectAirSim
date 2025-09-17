@@ -21,7 +21,8 @@ extensions = [
 
 # Mockeá deps que no están en CI (evita fallos de import)
 autodoc_mock_imports = [
-    'cryptography', 'airsim', 'cv2', 'numpy', 'pandas', 'scipy', 'torch', 'matplotlib'
+    'cryptography', 'msgpack', 'airsim', 'cv2', 'numpy', 'pandas',
+    'scipy', 'torch', 'matplotlib', 'requests'
 ]
 
 templates_path = ['_templates']
