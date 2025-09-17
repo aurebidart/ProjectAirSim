@@ -27,6 +27,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python3 -m pip install mkdocs pymdown-extensions
+          pip install Sphinx sphinx_rtd_theme numpy msgpack-rpc-python
           pip install -e .
 
       - name: Install dependencies for main docs
