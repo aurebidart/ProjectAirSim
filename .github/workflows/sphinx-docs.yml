@@ -1,5 +1,8 @@
 name: Build and Deploy Sphinx Docs
 
+permissions:
+  contents: write  # necesario para pushear a gh_page
+
 on:
   push:
     branches: [main]
@@ -22,32 +25,62 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      # deps de la doc principal
       - name: Install dependencies for main docs
         working-directory: ./docs
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
+      # deps de la doc del cliente Python
       - name: Install dependencies for Python client docs
         working-directory: ./client/python
         run: pip install -e projectairsim
 
-      - name: Build Python client docs
+      - name: Extra runtime deps for client docs
+        run: pip install cryptography
+      - name: Extra runtime deps for client docs
+        run: pip install cryptography msgpack
+
+      # (opcional) instala paquetes de sistema si tu doc los necesita
+      # - name: System deps
+      #   run: sudo apt-get update && sudo apt-get install -y graphviz
+
+      - name: Make package importable (PYTHONPATH)
+        run: |
+          echo "PYTHONPATH=$PWD/client/python/projectairsim/src:$PYTHONPATH" >> $GITHUB_ENV
+          python -c "import os, importlib.util; print('PYTHONPATH:', os.environ.get('PYTHONPATH')); print('projectairsim spec:', importlib.util.find_spec('projectairsim'))"
+
+      - name: Build Python client docs (strict & verbose)
         working-directory: ./client/python/projectairsim/docs
         run: |
           rm -rf build
-          make html
+          python -m sphinx -b html -W --keep-going -T -v . build/html
 
-      - name: Build main docs
+      - name: Build main docs (strict & verbose)
         working-directory: ./docs
         run: |
           rm -rf build
-          make html
+          python -m sphinx -b html -W --keep-going -T -v . build/html
+
+      - name: Install projectairsim (editable)
+        run: pip install -e client/python/projectairsim
 
       - name: Copy Python client docs into main docs
         run: |
           mkdir -p docs/build/html/client_api
           cp -r client/python/projectairsim/docs/build/html/* docs/build/html/client_api/
+
+      # útil para inspeccionar lo generado si algo falla
+      - name: Upload built docs as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-docs
+          path: |
+            client/python/projectairsim/docs/build/html
+            docs/build/html
 
       - name: Deploy to gh_page branch
         if: github.event_name == 'push'
