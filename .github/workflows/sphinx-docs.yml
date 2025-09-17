@@ -38,6 +38,9 @@ jobs:
         working-directory: ./client/python/projectairsim/docs
         run: pip install -r requirements.txt
 
+      - name: Extra runtime deps for client docs
+        run: pip install cryptography
+
       # (opcional) instala paquetes de sistema si tu doc los necesita
       # - name: System deps
       #   run: sudo apt-get update && sudo apt-get install -y graphviz
