@@ -46,6 +46,9 @@ jobs:
           rm -rf build
           make html
 
+      - name: Install projectairsim (editable)
+        run: pip install -e client/python/projectairsim
+
       - name: Copy Python client docs into main docs
         run: |
           mkdir -p docs/build/html/client_api
