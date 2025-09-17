@@ -29,8 +29,8 @@ jobs:
           pip install -r requirements.txt
 
       - name: Install dependencies for Python client docs
-        working-directory: ./client/python/projectairsim/docs
-        run: pip install -r requirements.txt
+        working-directory: ./client/python
+        run: pip install -e projectairsim
 
       - name: Build Python client docs
         working-directory: ./client/python/projectairsim/docs
