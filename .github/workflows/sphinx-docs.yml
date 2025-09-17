@@ -42,17 +42,11 @@ jobs:
       # - name: System deps
       #   run: sudo apt-get update && sudo apt-get install -y graphviz
 
-      # Hacemos que 'import projectairsim' funcione en CI (usa tu conf.py que apunta a ../src)
       - name: Make package importable (PYTHONPATH)
         run: |
           echo "PYTHONPATH=$PWD/client/python/projectairsim/src:$PYTHONPATH" >> $GITHUB_ENV
-          python - <<'PY'
-            import os, importlib.util
-            print("PYTHONPATH:", os.environ.get("PYTHONPATH"))
-            print("projectairsim spec:", importlib.util.find_spec("projectairsim"))
-            PY
+          python -c "import os, importlib.util; print('PYTHONPATH:', os.environ.get('PYTHONPATH')); print('projectairsim spec:', importlib.util.find_spec('projectairsim'))"
 
-      # Build en modo estricto para ver errores reales de autodoc/imports
       - name: Build Python client docs (strict & verbose)
         working-directory: ./client/python/projectairsim/docs
         run: |
