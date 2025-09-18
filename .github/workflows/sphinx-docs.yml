@@ -14,6 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Si tu runner es Linux, esto va bien. (En macOS usar sed -i '' ...)
       - name: Strip "docs/" prefixes from README
         run: sed -i 's|docs/||g' README.md
 
@@ -21,16 +22,31 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          cache: 'pip'
+
+      - name: Upgrade pip & build tooling
+        run: python -m pip install --upgrade pip build setuptools wheel
+
+      # ✅ Instalar TU paquete (editable) desde donde está el pyproject.toml
+      - name: Install projectairsim (editable)
+        run: python -m pip install -e ./client/python/projectairsim
+
+      # (Opcional) Si querés mockear deps pesadas en Sphinx, destildá y ajustá conf.py:
+      # - name: Print tip for mocking heavy deps
+      #   run: |
+      #     echo "Podés agregar en conf.py: autodoc_mock_imports = ['open3d','torch','onnxruntime','cv2']"
+
+      - name: Verify installation
+        run: |
+          python -m pip show projectairsim || true
+          python - << 'PY'
+          import projectairsim, sys
+          print("projectairsim loaded from:", projectairsim.__file__)
+          PY
 
       - name: Install dependencies for main docs
         working-directory: ./docs
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Install dependencies for Python client docs
-        working-directory: ./client/python
-        run: pip install -e projectairsim
+        run: python -m pip install -r requirements.txt
 
       - name: Build Python client docs
         working-directory: ./client/python/projectairsim/docs
